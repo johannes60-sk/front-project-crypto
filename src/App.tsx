@@ -22,9 +22,11 @@ const App = () => (
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            //   <Dashboard />
+            // </ProtectedRoute>
+            <Dashboard />
+
           }
         />
         <Route

@@ -38,8 +38,9 @@ const Dashboard = () => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const response = await API.get("/wallet/get_data");
-                setData(response.data);
+                const response = await API.get("/user/get_data/0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5");
+                console.log(response.data.data);
+                setData(response.data.data);
 
                 // const fakeData: PriceEvolution[] = [
                 //     { date: "2025-01-01", price: 1000 },
