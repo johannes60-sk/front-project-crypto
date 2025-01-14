@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import API from "services/api";
-import { Navigate } from "react-router-dom";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -11,10 +10,6 @@ const Navbar = () => {
         await API.delete("/auth/logout");
         logout();
         localStorage.removeItem("token");
-    }
-
-    if(!user) {
-        return <Navigate to="/login" />;
     }
 
     return (
