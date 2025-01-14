@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import API from "services/api";
+import { Navigate } from "react-router-dom";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -12,6 +13,10 @@ const Navbar = () => {
         localStorage.removeItem("token");
     }
 
+    if(!user) {
+        return <Navigate to="/login" />;
+    }
+
     return (
         <nav className="bg-gray-800 text-white p-4 flex justify-between">
             <Link to="/" className="font-bold text-lg">My App</Link>
@@ -20,7 +25,8 @@ const Navbar = () => {
                     <>
                         <Link to="/dashboard" className="mr-4">Dashboard</Link>
                         <Link to="/profile" className="mr-4">Profile</Link>
-                        <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded">Logout</button>
+                        <Link to="/logout" className="bg-red-500 px-4 py-2 rounded" onClick={handleLogout} >Logout</Link>
+                        {/* <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded">Logout</button> */}
                     </>
                 ) : (
                     <>

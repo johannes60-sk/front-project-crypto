@@ -7,7 +7,8 @@ const Profile = () => {
     useEffect(() => {
         const fetchWallet = async () => {
             try {
-                const { data } = await API.get("/profile/get_wallet");
+                const { data } = await API.get("auth/profile/get_wallet");
+                console.log('data', data.wallet);
                 setWallet(data.wallet);
             } catch (error) {
                 console.error("Failed to fetch wallet");
@@ -20,7 +21,7 @@ const Profile = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await API.put("/profile/update_wallet", { wallet });
+            await API.put("auth/profile/update_wallet", { wallet });
         } catch (error) {
             console.error("Failed to update wallet");
         }

@@ -39,7 +39,6 @@ const Dashboard = () => {
             try {
                 setIsLoading(true);
                 const response = await API.get("/user/get_data/0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5");
-                console.log(response.data.data);
                 setData(response.data.data);
 
                 // const fakeData: PriceEvolution[] = [
