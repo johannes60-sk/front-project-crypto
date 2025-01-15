@@ -4,8 +4,6 @@ import { Navigate } from "react-router-dom";
 const Logout = () => {
     return (
         <div>
-            <h1>Logout...</h1>
-
             <Navigate to="/login" />
         </div>
     );

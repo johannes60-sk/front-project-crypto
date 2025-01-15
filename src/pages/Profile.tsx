@@ -8,7 +8,6 @@ const Profile = () => {
         const fetchWallet = async () => {
             try {
                 const { data } = await API.get("auth/profile/get_wallet");
-                console.log('data', data.wallet);
                 setWallet(data.wallet);
             } catch (error) {
                 console.error("Failed to fetch wallet");
