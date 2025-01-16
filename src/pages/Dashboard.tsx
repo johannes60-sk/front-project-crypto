@@ -29,18 +29,26 @@ interface PriceEvolution {
 
 const Dashboard = () => {
     const [data, setData] = useState<PriceEvolution[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setIsLoading(true);
-                const response = await API.get("/user/get_data/0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5");
-                setData(response.data.data);
-                setIsEmailVerified(response.data.isEmailVerified); // Assurez-vous que l'API renvoie cette information
-                setError(null);
+                if(!isLoading) {
+                    setIsLoading(true);
+                    const token = localStorage.getItem("accessToken");
+                    const userEmail = localStorage.getItem("userEmail")
+                    console.log(userEmail)
+                    const response = await API.get(`/user/get_data/${userEmail}`, {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                    setIsEmailVerified(response.data.isEmailVerified); // Assurez-vous que l'API renvoie cette information
+                    setData(response.data.data);
+                } 
 
                  // const fakeData: PriceEvolution[] = [
                 //     { date: "2025-01-01", price: 1000 },
