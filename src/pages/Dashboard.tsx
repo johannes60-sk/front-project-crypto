@@ -44,20 +44,23 @@ const Dashboard = () => {
     }
   }, [validateAccount]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if(!isLoading) {
-                    setIsLoading(true);
-                    const token = localStorage.getItem("accessToken");
-                    const userEmail = localStorage.getItem("userEmail")
-                    const response = await API.get(`/user/get_data/${userEmail}`, {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                      },
-                    });
-                    setData(response.data.data);
-                } 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!isLoading) {
+          setIsLoading(true);
+          const token = localStorage.getItem("accessToken");
+          const user = localStorage.getItem("user")
+            ? JSON.parse(localStorage.getItem("user") as string)
+            : null;
+
+          const response = await API.get(`/user/get_data/${user.email}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setData(response.data.data);
+        }
 
         // const fakeData: PriceEvolution[] = [
         //     { date: "2025-01-01", price: 1000 },
