@@ -10,6 +10,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "pages/Profile";
 import Logout from "pages/Logout";
+import ForgotPassword from "pages/ForgotPassword";
 
 const App = () => (
   <AuthProvider>
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/dashboard"
           element={

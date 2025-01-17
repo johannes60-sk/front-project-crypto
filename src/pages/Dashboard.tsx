@@ -9,7 +9,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-// import API from "services/api";
 import { Line } from "react-chartjs-2";
 import API from "services/api";
 
@@ -28,11 +27,11 @@ interface PriceEvolution {
     price: number;
 }
 
-
 const Dashboard = () => {
     const [data, setData] = useState<PriceEvolution[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,8 +39,10 @@ const Dashboard = () => {
                 setIsLoading(true);
                 const response = await API.get("/user/get_data/0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5");
                 setData(response.data.data);
+                setIsEmailVerified(response.data.isEmailVerified); // Assurez-vous que l'API renvoie cette information
+                setError(null);
 
-                // const fakeData: PriceEvolution[] = [
+                 // const fakeData: PriceEvolution[] = [
                 //     { date: "2025-01-01", price: 1000 },
                 //     { date: "2025-01-02", price: 1020 },
                 //     { date: "2025-01-03", price: 980 },
@@ -52,7 +53,7 @@ const Dashboard = () => {
                 // ];
                 // await new Promise((resolve) => setTimeout(resolve, 1000));
                 // setData(fakeData);
-                setError(null);
+
             } catch (err) {
                 setError("Failed to fetch data. Please try again later.");
             } finally {
@@ -89,9 +90,16 @@ const Dashboard = () => {
         },
     };
 
+    const token = localStorage.getItem("token");
+
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Crypto Wallet</h1>
+            {!isEmailVerified && (
+                <div className="bg-yellow-500 text-white p-2 rounded mb-4 mt-2">
+                    Please verify your email to access all features. <a href={`/verify-email/${token}`} className="underline">Verify Email</a>
+                </div>
+            )}
             {isLoading && <p>Loading...</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
             {!isLoading && !error && data.length > 0 && (

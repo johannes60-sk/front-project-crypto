@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import API from "../services/api";
 import { useAuth } from "../hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 
 const Login = () => {
     const { user, login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -15,6 +14,7 @@ const Login = () => {
             const { data } = await API.post("/auth/login", { email, password });
             login();
             localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("user", JSON.stringify(email));
             console.log(data);
         } catch (error) {
             console.error("Login failed");
@@ -45,6 +45,11 @@ const Login = () => {
             <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
                 Login
             </button>
+            <div className="text-center">
+                <Link to="/forgot-password" className="text-blue-500">
+                    Forgot Password?
+                </Link>
+            </div>
         </form>
     );
 };
