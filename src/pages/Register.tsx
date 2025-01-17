@@ -8,6 +8,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    wallet: ""
   });
   const [errors, setErrors] = useState<string | null>(null);
 
@@ -26,9 +27,9 @@ const Register = () => {
     }
 
     try {
-      const { email, password } = formData;
+      const { email, password, wallet } = formData;
 
-      await API.post("/auth/register", { email, password });
+      await API.post("/auth/register", { email, password, walletAdress: wallet });
       navigate("/login");
     } catch (error: any) {
       setErrors(error.response?.data?.message || "Registration failed.");
@@ -90,6 +91,22 @@ const Register = () => {
             required
             className="w-full p-2 border rounded"
             placeholder="Confirm your password"
+          />
+        </div>
+
+        {/* Add Wallet */}
+        <div>
+          <label htmlFor="wallet" className="block font-medium mb-1">
+            Add Wallet
+          </label>
+          <input
+            type="texte"
+            id="wallet"
+            name="wallet"
+            value={formData.wallet}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            placeholder="Your wallet address"
           />
         </div>
 

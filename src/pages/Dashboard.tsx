@@ -29,7 +29,7 @@ interface PriceEvolution {
 
 const Dashboard = () => {
   const [data, setData] = useState<PriceEvolution[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
@@ -44,15 +44,20 @@ const Dashboard = () => {
     }
   }, [validateAccount]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await API.get(
-          "/user/get_data/0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5"
-        );
-        setData(response.data.data);
-        setError(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if(!isLoading) {
+                    setIsLoading(true);
+                    const token = localStorage.getItem("accessToken");
+                    const userEmail = localStorage.getItem("userEmail")
+                    const response = await API.get(`/user/get_data/${userEmail}`, {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                    setData(response.data.data);
+                } 
 
         // const fakeData: PriceEvolution[] = [
         //     { date: "2025-01-01", price: 1000 },
