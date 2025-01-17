@@ -1,14 +1,29 @@
 import React, { useState } from "react";
 import API from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const verifyEmail = async () => {
         try {
             const token = window.location.pathname.split("/").pop();
             const { data } = await API.post("/auth/verify-email", { token });
             setMessage(data.message);
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            user.validateAccount = true;
+            localStorage.setItem("user", JSON.stringify(user));
+            let countdown = 3;
+            const interval = setInterval(() => {
+                if (countdown > 0) {
+                    setMessage(`Redirecting in ${countdown}...`);
+                    countdown--;
+                } else {
+                    clearInterval(interval);
+                    navigate("/dashboard");
+                }
+            }, 1000);
         } catch (error) {
             setMessage("Email verification failed.");
         }
