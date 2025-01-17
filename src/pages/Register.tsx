@@ -11,10 +11,24 @@ const Register = () => {
     wallet: ""
   });
   const [errors, setErrors] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      validatePassword(value);
+    }
+  };
+
+  const validatePassword = (password: string) => {
+    const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordCriteria.test(password)) {
+      setPasswordError("Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.");
+    } else {
+      setPasswordError(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,6 +37,11 @@ const Register = () => {
     // Basic client-side validation
     if (formData.password !== formData.confirmPassword) {
       setErrors("Passwords do not match.");
+      return;
+    }
+
+    if (passwordError) {
+      setErrors("Please fix the password errors before submitting.");
       return;
     }
 
@@ -75,6 +94,7 @@ const Register = () => {
             className="w-full p-2 border rounded"
             placeholder="Enter your password"
           />
+          {passwordError && <div className="text-red-500">{passwordError}</div>}
         </div>
 
         {/* Confirm Password */}
@@ -100,7 +120,7 @@ const Register = () => {
             Add Wallet
           </label>
           <input
-            type="texte"
+            type="text"
             id="wallet"
             name="wallet"
             value={formData.wallet}
