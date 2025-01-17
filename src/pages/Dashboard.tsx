@@ -31,18 +31,16 @@ const Dashboard = () => {
   const [data, setData] = useState<PriceEvolution[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
-  const [validateAccount, setValidateAccount] = useState<boolean>(
-    user.validateAccount
+  const storedValidateAccount = localStorage.getItem("validateAccount");
+  const [validateAccount] = useState<boolean>(
+    storedValidateAccount !== null
+      ? JSON.parse(storedValidateAccount)
+      : user?.validateAccount
   );
-
-  useEffect(() => {
-    if (validateAccount === true) {
-      setValidateAccount(true);
-    }
-  }, [validateAccount]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,18 +59,6 @@ const Dashboard = () => {
           });
           setData(response.data.data);
         }
-
-        // const fakeData: PriceEvolution[] = [
-        //     { date: "2025-01-01", price: 1000 },
-        //     { date: "2025-01-02", price: 1020 },
-        //     { date: "2025-01-03", price: 980 },
-        //     { date: "2025-01-04", price: 1050 },
-        //     { date: "2025-01-05", price: 1100 },
-        //     { date: "2025-01-06", price: 1080 },
-        //     { date: "2025-01-07", price: 1150 },
-        // ];
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
-        // setData(fakeData);
       } catch (err) {
         setError("Failed to fetch data. Please try again later.");
       } finally {
@@ -111,15 +97,42 @@ const Dashboard = () => {
 
   const token = localStorage.getItem("token");
 
+  const verifyEmail = async () => {
+    await API.post("/auth/send-email", { token });
+    setEmailSent(true);
+  };
+
   return (
     <div style={{ padding: "2rem" }}>
       <h1>Crypto Wallet</h1>
-      {!user.validateAccount && (
-        <div className="bg-yellow-500 text-white p-2 rounded mb-4 mt-2">
-          Please verify your email to access all features.{" "}
-          <a href={`/verify-email/${token}`} className="underline">
-            Verify Email
-          </a>
+      {!validateAccount && (
+        <div
+          className={`p-2 rounded mb-4 mt-2 ${
+            emailSent ? "bg-green-500" : "bg-yellow-500"
+          } text-white`}
+        >
+          {emailSent ? (
+            "A verification email has been sent. Please check your inbox."
+          ) : (
+            <>
+              Please verify your email to access all features.{" "}
+              <button
+                onClick={verifyEmail}
+                className="underline"
+                style={{
+                  fontWeight: "bold",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  color: "red",
+                  textDecoration: "underline",
+                }}
+              >
+                Verify Email
+              </button>
+            </>
+          )}
         </div>
       )}
       {isLoading && <p>Loading...</p>}

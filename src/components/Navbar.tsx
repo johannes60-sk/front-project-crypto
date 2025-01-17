@@ -13,6 +13,7 @@ const Navbar = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("emailVerified");
+    localStorage.removeItem("validateAccount");
   };
 
   return (
