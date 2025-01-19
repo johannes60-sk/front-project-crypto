@@ -1,46 +1,201 @@
-# Getting Started with Create React App
+# 🚀 Crypto Portfolio Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Application fullstack permettant de suivre l'évolution de la valeur d'un portefeuille Ethereum, avec visualisation graphique et historique des transactions.
 
-## Available Scripts
+## 📑 Table des Matières
 
-In the project directory, you can run:
+- [Aperçu](#aperçu)
+- [Technologies](#technologies)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Utilisation](#utilisation)
+- [API Endpoints](#api-endpoints)
+- [Docker](#docker)
+- [Base de données](#base-de-données)
+- [Tests](#tests)
+- [Contribution](#contribution)
 
-### `npm start`
+## 🎯 Aperçu
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Cette application permet de :
+- Suivre la valeur d'un portefeuille Ethereum en temps réel
+- Visualiser l'historique des transactions
+- Convertir automatiquement les valeurs ETH en EUR
+- Gérer plusieurs portefeuilles par utilisateur
+- Authentifier les utilisateurs de manière sécurisée
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 💻 Technologies
 
-### `npm test`
+### Frontend
+- React 18 avec TypeScript
+- Chart.js pour les graphiques
+- Axios pour les requêtes HTTP
+- TailwindCSS pour le styling
+- JWT pour l'authentification
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Backend
+- Node.js avec Express
+- Prisma comme ORM
+- PostgreSQL pour la base de données
+- JWT pour l'authentification
+- Etherscan API pour les données blockchain
+- CryptoCompare API pour les prix
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📥 Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Cloner les repositories**
+```bash
+# Frontend
+git clone https://github.com/johannes60-sk/front-project-crypto.git
+cd front-project-crypto
+npm install
 
-### `npm run eject`
+# Backend
+git clone https://github.com/Mehdi-Mah/server-project-crypto.git
+cd server-project-crypto
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. **Configuration des variables d'environnement**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Frontend (.env) :
+```env
+REACT_APP_API_BASE_URL=http://localhost:8080/api/v1
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Backend (.env) :
+```env
+# Database
+DATABASE_URL=postgresql://admin:password@localhost:5432/db_project
+PORT=8081
+ACCESS_TOKEN_SECRET=secret_access_token
+REFRESH_TOKEN_SECRET=secret_refresh_token
+WALLET_ADDRESS=votre adresse de wallet
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+# APIs
+ETHERSCAN_API_KEY="votre-clé-api-etherscan"
+CRYPTOCOMPARE_API_KEY="votre-clé-api-cryptocompare"
 
-## Learn More
+# Email
+SMTP_HOST=maildev
+SMTP_PORT=1025
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🐳 Docker
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Créer le docker-compose.yml**
+```yaml
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_project
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    ports:
+      - "5050:8080"  # Adminer sera accessible sur le port 5050 de l'hôte
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+```
+
+2. **Lancer les containers**
+```bash
+docker-compose up -d
+```
+
+## 🗄️ Base de données
+
+1. **Initialiser Prisma**
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+2. **Schema Prisma**
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password      String
+  wallet        String
+  validateAccount Boolean
+  failedLoginAttempts Int       @default(0)
+  accountLockedUntil  DateTime?
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String
+  expiredAt DateTime
+}
+```
+
+## 🔌 API Endpoints
+
+### Authentification
+```
+POST /api/v1/auth/register - Inscription
+POST /api/v1/auth/login    - Connexion
+POST /api/v1/auth/refresh  - Rafraîchir le token
+POST /api/v1/auth/logout   - Déconnexion
+```
+
+### Wallet
+```
+GET    /api/v1/user/get_data/:address  - Données du wallet
+GET    /api/v1/profile/get_wallet      - Récupérer l'adresse
+PUT    /api/v1/profile/update_wallet   - Mettre à jour l'adresse
+```
+
+## 📱 Utilisation
+
+1. **Démarrer l'application**
+```bash
+# Backend
+cd backend
+npm run dev
+
+# Frontend
+cd frontend
+npm start
+```
+
+## 🧪 Tests
+
+```bash
+# Frontend
+cd frontend
+npm test
+
+# Backend
+cd backend
+npm test
+```
+
+
