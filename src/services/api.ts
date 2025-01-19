@@ -40,6 +40,13 @@ API.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
+
+        // Si l'erreur est une 401 et qu'aucun token n'est disponible
+        if (error.response.status === 401 && !TokenService.getToken()) {
+            console.warn("Aucun token disponible. Redirection vers /login");
+            return Promise.reject(error); // Permet de gérer cette erreur côté front-end
+        }
+
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             if (isRefreshing) {
@@ -56,8 +63,8 @@ API.interceptors.response.use(
             try {
                 const { data } = await axios.post(
                     `${API.defaults.baseURL}/auth/refresh`,
-                    {}, // No need to send data, cookies handle the refreshToken
-                    { withCredentials: true } // Ensure cookies are sent
+                    {},
+                    { withCredentials: true }
                 );
 
                 const { accessToken } = data;
@@ -70,19 +77,19 @@ API.interceptors.response.use(
 
                 return API(originalRequest);
             } catch (err: any) {
-                console.error("Token refresh failed:", err.message);
+                console.error("Échec du rafraîchissement du token :", err.message);
 
                 TokenService.removeToken();
                 isRefreshing = false;
 
-                // wait for 15 seconds 
-                await new Promise((resolve) => setTimeout(resolve, 25000));
                 window.location.href = "/login";
             }
         }
 
+        // Passer toutes les autres erreurs
         return Promise.reject(error);
     }
 );
+
 
 export default API;
